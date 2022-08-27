@@ -2,9 +2,10 @@ from datetime import datetime
 import re
 from urllib.parse import urlparse
 import time
-from config import FROM_CHANNELS, TO_CHANNELS, RUN_TITLE, LINK_FOR_REPL, EXCEPT_LINKS
+from config import *
 from subprocess import call
 import logging
+import socks
 
 try:
     from telethon import TelegramClient, events
@@ -25,9 +26,12 @@ if RUN_TITLE:
         time.sleep(0.03)
         print(ch, end='', flush=True)
 
-client = TelegramClient('post', api_id, api_hash)
-client.start()
-
+if PROXY_ENABLED:
+    client = TelegramClient('post', api_id, api_hash, proxy=socks.set_default_proxy(socks.HTTP, PROXY_IP, PROXY_PORT))
+    client.start()
+else:
+    client = TelegramClient('post', api_id, api_hash)
+    client.start()
 print("Автопостер запущен!")
 
 def get_current_time():
